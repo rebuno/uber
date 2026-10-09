@@ -1,0 +1,9 @@
+{
+  "name": "uber-sandbox-vercel",
+  "private": true,
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "@vercel/sandbox": "^3.5.1"
+  }
+}

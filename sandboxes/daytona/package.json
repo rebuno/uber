@@ -1,0 +1,9 @@
+{
+  "name": "uber-sandbox-daytona",
+  "private": true,
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "@daytonaio/sdk": "^0.222.0"
+  }
+}

@@ -1,0 +1,5 @@
+agents:
+  - id: uber
+    webhook_url: http://localhost:5000/webhook
+    secret: uber-secret
+    policy_file: policy.yaml

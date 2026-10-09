@@ -1,0 +1,11 @@
+{
+  "extends": "../tsconfig.json",
+  "compilerOptions": {
+    "erasableSyntaxOnly": true,
+    "verbatimModuleSyntax": true,
+    "paths": {
+      "@rebuno/uber-agent/workspace": ["../agent/workspace/types.ts"]
+    }
+  },
+  "include": ["."]
+}

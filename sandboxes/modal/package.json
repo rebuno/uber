@@ -1,0 +1,9 @@
+{
+  "name": "uber-sandbox-modal",
+  "private": true,
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "modal": "^0.11.0"
+  }
+}

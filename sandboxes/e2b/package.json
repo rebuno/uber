@@ -1,0 +1,9 @@
+{
+  "name": "uber-sandbox-e2b",
+  "private": true,
+  "type": "module",
+  "main": "index.ts",
+  "dependencies": {
+    "e2b": "^2.52.0"
+  }
+}

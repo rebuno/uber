@@ -1,0 +1,62 @@
+name: Publish
+
+on:
+  release:
+    types: [published]
+
+jobs:
+  agent-image:
+    if: startsWith(github.ref_name, 'agent-v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      packages: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check the tag matches the agent's version
+        run: test "${GITHUB_REF_NAME#agent-v}" = "$(node -p "require('./agent/package.json').version")"
+
+      - uses: docker/login-action@v4
+        with:
+          registry: ghcr.io
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - uses: docker/metadata-action@v6
+        id: meta
+        with:
+          images: ghcr.io/${{ github.repository }}
+          tags: |
+            type=match,pattern=agent-v(.*),group=1
+            type=raw,value=latest
+
+      - uses: docker/build-push-action@v7
+        with:
+          push: true
+          tags: ${{ steps.meta.outputs.tags }}
+          labels: ${{ steps.meta.outputs.labels }}
+
+  tui-npm:
+    if: startsWith(github.ref_name, 'tui-v')
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      id-token: write
+    steps:
+      - uses: actions/checkout@v7
+
+      - name: Check the tag matches the client's version
+        run: test "${GITHUB_REF_NAME#tui-v}" = "$(node -p "require('./tui/package.json').version")"
+
+      - uses: pnpm/action-setup@v6
+
+      - uses: actions/setup-node@v7
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+
+      - run: pnpm install --frozen-lockfile
+
+      - run: npm publish --access public
+        working-directory: tui

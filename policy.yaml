@@ -1,0 +1,38 @@
+default_action: deny
+rules:
+  - id: allow-llm
+    when:
+      step_kind: llm_call
+    then:
+      decision: allow
+
+  - id: allow-sandbox
+    when:
+      targets: [read, edit, write, bash]
+    then:
+      decision: allow
+
+  - id: allow-subagents
+    when:
+      targets: [subagent]
+    then:
+      decision: allow
+
+  - id: github-reads
+    when:
+      targets:
+        - mcp__github__get_*
+        - mcp__github__list_*
+        - mcp__github__search_*
+        - mcp__github__*_read
+        - mcp__github__*_list
+        - mcp__github__*_get
+    then:
+      decision: allow
+
+  - id: github-writes
+    when:
+      targets: [mcp__github__*]
+    then:
+      decision: require_approval
+      reason: changes on GitHub need approval

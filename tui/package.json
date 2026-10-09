@@ -1,0 +1,32 @@
+{
+  "name": "@rebuno/uber",
+  "version": "0.1.0",
+  "description": "Terminal client for Uber, a coding agent built on Pi that runs on Rebuno",
+  "license": "MIT",
+  "homepage": "https://docs.rebuno.io/uber/terminal-client",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rebuno/uber.git",
+    "directory": "tui"
+  },
+  "type": "module",
+  "engines": {
+    "node": ">=24"
+  },
+  "bin": {
+    "uber": "dist/main.js"
+  },
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "prepack": "pnpm build"
+  },
+  "dependencies": {
+    "@earendil-works/pi-ai": "1.0.3",
+    "@earendil-works/pi-coding-agent": "1.0.3",
+    "@earendil-works/pi-tui": "1.0.3",
+    "rebuno": "^0.24.0"
+  }
+}
