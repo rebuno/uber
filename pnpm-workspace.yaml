@@ -7,3 +7,5 @@ allowBuilds:
   cbor-extract: false
   esbuild: true
   protobufjs: false
+minimumReleaseAgeExclude:
+  - rebuno

@@ -28,7 +28,7 @@ export function subagentTool(
     name: "subagent",
     idempotency: "safe_to_retry",
     resources: ["workspace"],
-    execute: ({ task }: { task: string }) => {
+    execute: ({ task, name }: { task: string; name?: string }) => {
       onStart();
       const input: SubagentInput = {
         task,
@@ -36,7 +36,9 @@ export function subagentTool(
         model: model(),
         subagent: { binding: workspace.binding },
       };
-      return subagent(AGENT_ID, input);
+      return subagent(AGENT_ID, input, {
+        session: name && `subagent:${execution().id}:${name}`,
+      });
     },
   });
   return {
@@ -44,13 +46,18 @@ export function subagentTool(
     label: "Subagent",
     promptSnippet: "Delegate a task to a subagent with an isolated context",
     description:
-      "Delegate a self-contained task to a subagent with the same tools, working in the same repository, and get its answer back. Give it everything it needs to know; it does not see this conversation.",
+      "Delegate a self-contained task to a subagent with the same tools, working in the same repository, and get its answer back. Give it everything it needs to know; it does not see this conversation. Name it to continue it later: a call with the same name continues that subagent's conversation until you reply to the user.",
     parameters: Type.Object({
       task: Type.String({ description: "What the subagent should do" }),
+      name: Type.Optional(
+        Type.String({
+          description: "Name of the subagent to start or continue",
+        }),
+      ),
     }),
     execute: async (_id, params) => {
       try {
-        const output = (await run(params as { task: string })) as
+        const output = (await run(params as { task: string; name?: string })) as
           | string
           | { answer?: string }
           | null;

@@ -13,6 +13,6 @@
     "@earendil-works/pi-agent-core": "1.0.3",
     "@earendil-works/pi-ai": "1.0.3",
     "@earendil-works/pi-coding-agent": "1.0.3",
-    "rebuno": "^0.24.0"
+    "rebuno": "^0.25.0"
   }
 }
