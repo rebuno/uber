@@ -36,6 +36,7 @@ export const DASHBOARD_URL = (
 interface ExecutionSummary {
   id: string;
   session?: string;
+  spawned_by?: { execution_id: string };
   status: string;
   input?: { task?: string };
   created_at: string;
@@ -68,7 +69,11 @@ export async function sessionExecutions(session: string): Promise<Execution[]> {
 export async function recentSessions() {
   const latest = new Map<string, ExecutionSummary>();
   for (const execution of await listExecutions({})) {
-    if (execution.session && !latest.has(execution.session))
+    if (
+      execution.session &&
+      !execution.spawned_by &&
+      !latest.has(execution.session)
+    )
       latest.set(execution.session, execution);
   }
   return [...latest.entries()].map(([session, execution]) => ({
