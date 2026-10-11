@@ -10,9 +10,9 @@
     "build": "tsc -p tsconfig.build.json"
   },
   "dependencies": {
-    "@earendil-works/pi-agent-core": "1.0.3",
-    "@earendil-works/pi-ai": "1.0.3",
-    "@earendil-works/pi-coding-agent": "1.0.3",
+    "@earendil-works/pi-agent-core": "1.0.4",
+    "@earendil-works/pi-ai": "1.0.4",
+    "@earendil-works/pi-coding-agent": "1.0.4",
     "rebuno": "^0.25.0"
   }
 }
