@@ -3,6 +3,7 @@ import { join } from "node:path";
 import {
   type Api,
   InMemoryCredentialStore,
+  InMemoryModelsStore,
   type Model,
 } from "@earendil-works/pi-ai";
 import {
@@ -38,6 +39,7 @@ export async function createModels(
 ) {
   const modelRuntime = await ModelRuntime.create({
     credentials: new InMemoryCredentialStore(),
+    modelsStore: new InMemoryModelsStore(),
     modelsPath: join(CONFIG_DIR, "models.json"),
     refreshOnCreate: false,
   });

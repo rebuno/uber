@@ -1,5 +1,3 @@
-import { join } from "node:path";
-
 import {
   createMcpExtension,
   type ExtensionAPI,
@@ -197,7 +195,7 @@ export function mcpExtension(githubToken: string, enabled: string[]) {
     credentials: new runtime.McpOAuthCredentialStore(
       new InMemoryAuthStorageBackend(),
     ),
-    logPath: join(CONFIG_DIR, "mcp.log"),
+    logPath: "/dev/stderr",
     loadConfig: (ctx) => {
       const loaded = loadMcpConfig({
         agentDir: CONFIG_DIR,
