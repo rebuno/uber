@@ -2,6 +2,7 @@
 import { env } from "node:process";
 
 import type { ThinkingLevel } from "@earendil-works/pi-agent-core";
+import { type Static, Type } from "@earendil-works/pi-ai";
 import {
   createAgentSession,
   SessionManager,
@@ -19,33 +20,41 @@ import {
   workspaceResources,
 } from "./resources.js";
 import { AGENT_ID, CONFIG_DIR, requiredEnv } from "./settings.js";
-import { type SubagentInput, subagentTool } from "./subagents.js";
+import { subagentTool } from "./subagents.js";
 import { codingTools } from "./tools.js";
 import { openWorkspace } from "./workspace/index.js";
 
-const THINKING_LEVELS: ThinkingLevel[] = [
-  "off",
-  "minimal",
-  "low",
-  "medium",
-  "high",
-  "xhigh",
-  "max",
-];
+const Input = Type.Object({
+  task: Type.String({ description: "What to do" }),
+  repo: Type.Optional(
+    Type.String({
+      pattern: "^[\\w.-]+/[\\w.-]+$",
+      description: "GitHub repository as owner/name",
+    }),
+  ),
+  model: Type.Optional(Type.String({ description: "Model as provider/id" })),
+  thinking: Type.Optional(
+    Type.Union(
+      ["off", "minimal", "low", "medium", "high", "xhigh", "max"].map((level) =>
+        Type.Literal(level),
+      ),
+    ),
+  ),
+  mcp: Type.Optional(
+    Type.Array(Type.String(), { description: "MCP servers to turn on" }),
+  ),
+  extensions: Type.Optional(
+    Type.Array(Type.String(), { description: "Extensions to turn on" }),
+  ),
+  subagent: Type.Optional(
+    Type.Object({ binding: Type.Optional(Type.Unknown()) }),
+  ),
+});
 
-async function process(
-  input:
-    | {
-        task: string;
-        repo?: string;
-        model?: string;
-        thinking?: ThinkingLevel;
-        mcp?: string[];
-        extensions?: string[];
-      }
-    | SubagentInput,
-) {
-  const isSubagent = "subagent" in input;
+const Output = Type.Object({ answer: Type.Optional(Type.String()) });
+
+async function process(input: Static<typeof Input>) {
+  const isSubagent = input.subagent !== undefined;
   const state = await previous<{
     entries: never[];
     repo?: string;
@@ -65,25 +74,15 @@ async function process(
   if (input.repo && input.repo !== repo)
     throw new Error(`session works on ${repo}, not ${input.repo}`);
   const mcp = input.mcp ?? state?.mcp ?? [];
-  if (!Array.isArray(mcp) || mcp.some((server) => typeof server !== "string"))
-    throw new Error("mcp must be a list of MCP server names");
   const extensions = input.extensions ?? state?.extensions ?? [];
-  if (
-    !Array.isArray(extensions) ||
-    extensions.some((name) => typeof name !== "string")
-  )
-    throw new Error("extensions must be a list of extension names");
-  const thinking = input.thinking ?? state?.thinking;
-  if (thinking && !THINKING_LEVELS.includes(thinking))
-    throw new Error(
-      `thinking must be one of ${THINKING_LEVELS.join(", ")}, got ${thinking}`,
-    );
+  const thinking =
+    (input.thinking as ThinkingLevel | undefined) ?? state?.thinking;
   const token = await githubToken(repo);
   const workspace = await openWorkspace(
     repo,
     token,
     await gitIdentity(token),
-    isSubagent ? input.subagent.binding : undefined,
+    input.subagent?.binding,
   );
   const resources = await loadProjectResources(workspace, workspace.cwd);
 
@@ -244,6 +243,10 @@ async function process(
 }
 
 const agent = new Agent(AGENT_ID, {
+  description:
+    "Coding agent that works on a GitHub repository and answers with its result",
+  inputSchema: Input,
+  outputSchema: Output,
   secret: requiredEnv("REBUNO_AGENT_SECRET"),
   baseUrl: env.REBUNO_URL ?? "http://localhost:8080",
 });
