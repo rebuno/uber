@@ -14,10 +14,10 @@
   },
   "devDependencies": {
     "@biomejs/biome": "^2.5.15",
-    "@daytonaio/sdk": "^0.223.0",
-    "@types/node": "^26.0.0",
-    "@vercel/sandbox": "^3.5.1",
-    "e2b": "^2.53.1",
+    "@daytonaio/sdk": "^0.224.0",
+    "@types/node": "^26.6.5",
+    "@vercel/sandbox": "^3.8.0",
+    "e2b": "^2.56.0",
     "modal": "^0.11.0",
     "tsx": "^4.0.0",
     "typescript": "^7.0.2"
