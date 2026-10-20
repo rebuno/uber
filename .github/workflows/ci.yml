@@ -11,15 +11,16 @@ jobs:
     steps:
       - uses: actions/checkout@v7
 
-      - uses: pnpm/action-setup@v6
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413
 
       - uses: actions/setup-node@v7
         with:
-          node-version: 24
-          cache: pnpm
+          node-version: "24"
+          cache: "pnpm"
 
       - run: pnpm install --frozen-lockfile
 
-      - run: pnpm typecheck
-      - run: pnpm test
-      - run: pnpm lint
+      - run: pnpm run typecheck
+      - run: pnpm run test
+      - run: pnpm run lint
+      - run: pnpm run build

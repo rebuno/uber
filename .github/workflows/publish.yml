@@ -49,12 +49,13 @@ jobs:
       - name: Check the tag matches the client's version
         run: test "${GITHUB_REF_NAME#tui-v}" = "$(node -p "require('./tui/package.json').version")"
 
-      - uses: pnpm/action-setup@v6
+      - uses: pnpm/action-setup@ea17c68df8912ef543352723c149a84f56e3d413
 
       - uses: actions/setup-node@v7
         with:
-          node-version: 24
-          registry-url: https://registry.npmjs.org
+          node-version: "24"
+          registry-url: "https://registry.npmjs.org"
+          cache: "pnpm"
 
       - run: pnpm install --frozen-lockfile
 
