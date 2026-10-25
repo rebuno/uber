@@ -1,6 +1,6 @@
 {
   "name": "@rebuno/uber",
-  "version": "0.2.0",
+  "version": "0.3.0",
   "description": "Terminal client for Uber, a coding agent built on Pi that runs on Rebuno",
   "license": "MIT",
   "homepage": "https://docs.rebuno.io/uber/terminal-client",
