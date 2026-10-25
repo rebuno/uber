@@ -1,4 +1,5 @@
 import { cwd } from "node:process";
+import type { AssistantMessage } from "@earendil-works/pi-ai";
 import {
   AssistantMessageComponent,
   CompactionSummaryMessageComponent,
@@ -16,12 +17,11 @@ import {
   TruncatedText,
   type TUI,
 } from "@earendil-works/pi-tui";
-
 import type { Step } from "rebuno";
 
 import type { ClientExtensions } from "./extensions.js";
 import { errorText } from "./kernel.js";
-import { assistantMessage, messageText } from "./messages.js";
+import { messageText, streamedMessage } from "./messages.js";
 import { theme } from "./ui.js";
 
 // The tool definitions are used only for their renderers. A tool without
@@ -108,11 +108,10 @@ export class Transcript extends Container {
     if (this.#summaries.has(stepId)) return;
     const body = (this.#streams.get(stepId) ?? "") + data;
     this.#streams.set(stepId, body);
-    this.#message(stepId).updateContent(assistantMessage(body), true);
+    this.#message(stepId).updateContent(streamedMessage(body), true);
   }
 
-  modelFinished(stepId: string, body: string) {
-    const message = assistantMessage(body);
+  modelFinished(stepId: string, message: AssistantMessage) {
     if (!this.#summaries.has(stepId)) {
       this.#message(stepId).updateContent(message, false);
       return;

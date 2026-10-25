@@ -82,8 +82,7 @@ export async function recentSessions() {
   }));
 }
 
-// Live deltas are raw chunks of the provider's event stream; frames arrive
-// whole, while the chunks inside them can split a provider line.
+// Frames arrive whole, while the deltas inside them can split a line.
 export async function streamDeltas(
   executionId: string,
   onDelta: (stepId: string, data: string) => void,

@@ -8,7 +8,7 @@ import {
   SessionManager,
   SettingsManager,
 } from "@earendil-works/pi-coding-agent";
-import { Agent, execution, previous, Result, raiseForRefusal } from "rebuno";
+import { Agent, execution, previous, Result } from "rebuno";
 
 import { durable, Resume } from "./durable.js";
 import { githubToken, gitIdentity } from "./github.js";
@@ -138,6 +138,7 @@ async function process(input: Static<typeof Input>) {
   const { models, modelRuntime, find } = await createModels(
     settingsManager,
     resourceLoader.getExtensions().runtime,
+    onSuspend,
   );
   const requested = find(input.model);
   if (input.model && !requested)
@@ -207,10 +208,7 @@ async function process(input: Static<typeof Input>) {
     if (suspended) throw suspended;
     // A failed model call ends the run with an error message rather than throwing.
     const { errorMessage } = session.state;
-    if (errorMessage) {
-      raiseForRefusal(new Error(errorMessage));
-      throw new Error(errorMessage);
-    }
+    if (errorMessage) throw new Error(errorMessage);
     finished = true;
   } finally {
     await session.extensionRunner.emit({

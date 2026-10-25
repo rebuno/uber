@@ -9,7 +9,6 @@ import {
   DefaultResourceLoader,
   SettingsManager,
 } from "@earendil-works/pi-coding-agent";
-import { rebunoFetch } from "rebuno";
 
 const config = mkdtempSync(join(tmpdir(), "uber-models-"));
 const model = (id: string) => ({
@@ -54,28 +53,16 @@ async function load() {
     noSkills: true,
   });
   await loader.reload();
-  return createModels(settings, loader.getExtensions().runtime);
+  return createModels(settings, loader.getExtensions().runtime, () => {});
 }
 
-type Prepare = (
-  model: unknown,
-  options?: object,
-) => Promise<{ options: { fetch?: unknown } }>;
-
-test("every model request goes through rebunoFetch", async () => {
+test("every provider's model calls are recorded steps", async () => {
   const { modelRuntime, find } = await load();
-  const prepare = (modelRuntime as unknown as { prepareRequest: Prepare })
-    .prepareRequest;
-  const { options } = await prepare.call(modelRuntime, find("gateway/coder"));
-  assert.equal(options.fetch, rebunoFetch);
-});
-
-test("a model whose requests cannot be recorded is refused", async () => {
-  const { modelRuntime, models } = await load();
-  assert.ok(!models.some((m) => m.provider === "gemini"));
-  const flash = modelRuntime.getModel("gemini", "flash");
+  const flash = find("gemini/flash");
   assert.ok(flash);
-  const prepare = (modelRuntime as unknown as { prepareRequest: Prepare })
-    .prepareRequest;
-  await assert.rejects(prepare.call(modelRuntime, flash), /cannot be recorded/);
+  const message = await modelRuntime
+    .streamSimple(flash, { messages: [] })
+    .result();
+  assert.equal(message.stopReason, "error");
+  assert.match(message.errorMessage ?? "", /execution/i);
 });

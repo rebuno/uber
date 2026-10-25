@@ -1,5 +1,5 @@
 import { userInfo } from "node:os";
-
+import type { AssistantMessage } from "@earendil-works/pi-ai";
 import {
   CustomEditor,
   ExtensionSelectorComponent,
@@ -647,7 +647,7 @@ export class App {
       if (type === "step.succeeded")
         this.#transcript.modelFinished(
           stepId,
-          ((await step()).result as { body: string }).body,
+          ((await step()).result as { message: AssistantMessage }).message,
         );
       if (type === "step.failed" || type === "step.denied") {
         this.#notice(
