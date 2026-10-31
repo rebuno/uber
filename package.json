@@ -13,11 +13,11 @@
     "format": "biome check --write"
   },
   "devDependencies": {
-    "@biomejs/biome": "^2.5.15",
-    "@daytonaio/sdk": "^0.225.0",
+    "@biomejs/biome": "^2.6.3",
+    "@daytonaio/sdk": "^0.226.1",
     "@types/node": "^26.6.5",
-    "@vercel/sandbox": "^3.8.0",
-    "e2b": "^2.58.0",
+    "@vercel/sandbox": "^3.9.0",
+    "e2b": "^2.61.0",
     "modal": "^0.11.1",
     "tsx": "^4.0.0",
     "typescript": "^7.0.2"
