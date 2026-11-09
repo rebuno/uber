@@ -2,12 +2,20 @@
 import { env } from "node:process";
 
 import type { ThinkingLevel } from "@earendil-works/pi-agent-core";
-import { type Static, Type } from "@earendil-works/pi-ai";
 import {
   createAgentSession,
   SessionManager,
   SettingsManager,
 } from "@earendil-works/pi-coding-agent";
+import {
+  arr,
+  obj,
+  oneOf,
+  opt,
+  type Static,
+  str,
+  unknown,
+} from "@earendil-works/pi-schema";
 import { Agent, execution, previous, Result } from "rebuno";
 
 import { durable, Resume } from "./durable.js";
@@ -24,34 +32,27 @@ import { subagentTool } from "./subagents.js";
 import { codingTools } from "./tools.js";
 import { openWorkspace } from "./workspace/index.js";
 
-const Input = Type.Object({
-  task: Type.String({ description: "What to do" }),
-  repo: Type.Optional(
-    Type.String({
-      pattern: "^[\\w.-]+/[\\w.-]+$",
-      description: "GitHub repository as owner/name",
-    }),
-  ),
-  model: Type.Optional(Type.String({ description: "Model as provider/id" })),
-  thinking: Type.Optional(
-    Type.Union(
-      ["off", "minimal", "low", "medium", "high", "xhigh", "max"].map((level) =>
-        Type.Literal(level),
-      ),
+const Input = obj(
+  {
+    task: str({ description: "What to do" }),
+    repo: opt(
+      str({
+        pattern: "^[\\w.-]+/[\\w.-]+$",
+        description: "GitHub repository as owner/name",
+      }),
     ),
-  ),
-  mcp: Type.Optional(
-    Type.Array(Type.String(), { description: "MCP servers to turn on" }),
-  ),
-  extensions: Type.Optional(
-    Type.Array(Type.String(), { description: "Extensions to turn on" }),
-  ),
-  subagent: Type.Optional(
-    Type.Object({ binding: Type.Optional(Type.Unknown()) }),
-  ),
-});
+    model: opt(str({ description: "Model as provider/id" })),
+    thinking: opt(
+      oneOf(["off", "minimal", "low", "medium", "high", "xhigh", "max"]),
+    ),
+    mcp: opt(arr(str(), { description: "MCP servers to turn on" })),
+    extensions: opt(arr(str(), { description: "Extensions to turn on" })),
+    subagent: opt(obj({ binding: opt(unknown()) }, { open: true })),
+  },
+  { open: true },
+);
 
-const Output = Type.Object({ answer: Type.Optional(Type.String()) });
+const Output = obj({ answer: opt(str()) }, { open: true });
 
 async function process(input: Static<typeof Input>) {
   const isSubagent = input.subagent !== undefined;

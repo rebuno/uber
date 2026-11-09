@@ -1,5 +1,5 @@
 import type { ThinkingLevel } from "@earendil-works/pi-agent-core";
-import { Type } from "@earendil-works/pi-ai";
+import { obj, opt, str } from "@earendil-works/pi-schema";
 import { defineTool, execution, subagent } from "rebuno";
 import type { AnyTool } from "./durable.js";
 import { AGENT_ID } from "./settings.js";
@@ -47,14 +47,15 @@ export function subagentTool(
     promptSnippet: "Delegate a task to a subagent with an isolated context",
     description:
       "Delegate a self-contained task to a subagent with the same tools, working in the same repository, and get its answer back. Give it everything it needs to know; it does not see this conversation. Name it to continue it later: a call with the same name continues that subagent's conversation until you reply to the user.",
-    parameters: Type.Object({
-      task: Type.String({ description: "What the subagent should do" }),
-      name: Type.Optional(
-        Type.String({
-          description: "Name of the subagent to start or continue",
-        }),
-      ),
-    }),
+    parameters: obj(
+      {
+        task: str({ description: "What the subagent should do" }),
+        name: opt(
+          str({ description: "Name of the subagent to start or continue" }),
+        ),
+      },
+      { open: true },
+    ),
     execute: async (_id, params) => {
       try {
         const output = (await run(params as { task: string; name?: string })) as
